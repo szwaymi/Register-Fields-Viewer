@@ -62,40 +62,80 @@ goto PRO_NOW;
 		}
 		printf("#Value = [%08X]\n", iValue);
 	}
-	/*
+	
 PRO_NOW:
 	iValue = 0x87654321;
 	hHeap = HeapCreate(0, 0, 0);
-
+	if (hHeap == INVALID_HANDLE_VALUE || hHeap == 0) { return -1; }
+	
 	{
 		unsigned char iCon;
 		struct sField *pmField;
 		for (iCon = 0; iCon < 32; iCon++)
 		{
 			pmField = (struct sField *)HeapAlloc(hHeap, 0, sizeof(struct sField));
-			pmField->iStart = iCon;
-			pmField->iEnd = iCon;
-			pmField->pmNext = pmFields;
-			pmFields = pmField;
+			if (pmField)
+			{
+				pmField->iStart = iCon;
+				pmField->iEnd = iCon;
+				pmField->pmNext = pmFields;
+				pmFields = pmField;
+			}
 		}
 	}
 
 	{
 		struct sField *pmField;
 		pmField = pmFields;
-
-		while (pmField)
-		{
-			printf("[%d %d] ", pmField->iStart, pmField->iEnd);
-			pmField = pmField->pmNext;
-		}
 		while (pmField)
 		{
 			printf("[%d %d] ", pmField->iStart, pmField->iEnd);
 			pmField = pmField->pmNext;
 		}
 	}
-	*/
+	{
+		unsigned char iStart;
+		unsigned char iEnd;
+		iStart = 18;
+		iEnd = 10;
+		struct sField* pmHead;
+		struct sField* pmTail;
+		struct sField* pmTemp;
+		pmHead = pmFields;
+		while (pmHead)
+		{
+			if (pmHead->iStart == iStart) { break; }
+			pmHead = pmHead->pmNext;
+		}
+		pmTail = pmFields;
+		while (pmTail)
+		{
+			if (pmTail->iStart == iEnd) { break; }
+			pmTail = pmTail->pmNext;
+		}
+		pmTemp = pmHead->pmNext;
+		pmHead->pmNext = pmTail->pmNext;
+		pmHead->iEnd = pmTail->iEnd;
+		while (pmTemp != pmTail)
+		{
+			struct sField* pmRemove;
+			pmRemove = pmTemp;
+			pmTemp = pmTemp->pmNext;
+			HeapFree(hHeap, 0, pmRemove);
+		} 
+		HeapFree(hHeap, 0, pmTemp);
+		printf("========\n");
+	}
+	{
+		struct sField* pmField;
+		pmField = pmFields;
+		while (pmField)
+		{
+			printf("[%d %d] ", pmField->iStart, pmField->iEnd);
+			pmField = pmField->pmNext;
+		}
+	}
+	
 
 	HeapDestroy(hHeap);
 }
