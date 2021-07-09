@@ -84,7 +84,7 @@ PRO_NOW:
 		}
 	}
 
-	{
+	{//Showing
 		struct sField *pmField;
 		pmField = pmFields;
 		while (pmField)
@@ -93,7 +93,7 @@ PRO_NOW:
 			pmField = pmField->pmNext;
 		}
 	}
-	{
+	{//Merging
 		unsigned char iStart;
 		unsigned char iEnd;
 		iStart = 18;
@@ -126,7 +126,7 @@ PRO_NOW:
 		HeapFree(hHeap, 0, pmTemp);
 		printf("========\n");
 	}
-	{
+	{//Showing
 		struct sField* pmField;
 		pmField = pmFields;
 		while (pmField)
@@ -135,7 +135,40 @@ PRO_NOW:
 			pmField = pmField->pmNext;
 		}
 	}
-	
+	printf("\n>>>>\n");
+	{//Seperate
+		unsigned char iStart=18;
+		unsigned char iEnd;
+		unsigned char iCon;
+		struct sField *pmField;
+		pmField = pmFields;
+		for (iCon = 0; iCon < 32; iCon++)
+		{
+			if (pmField->iStart == iStart) { break; }
+			pmField = pmField->pmNext;
+		}
+		iEnd = pmField->iEnd;
+		pmField->iEnd = pmField->iStart;
+		for (iCon = 0; iCon < iStart-iEnd; iCon++)
+		{
+			struct sField *pmNew;
+			pmNew = (struct sField *)HeapAlloc(hHeap, 0, sizeof(struct sField));
+			pmNew->iStart = iEnd + iCon;
+			pmNew->iEnd = iEnd + iCon;
+			pmNew->pmNext = pmField->pmNext;
+			pmField->pmNext = pmNew;
+		}
+	}
+	printf("========\n");
+	{//Showing
+		struct sField* pmField;
+		pmField = pmFields;
+		while (pmField)
+		{
+			printf("[%d %d] ", pmField->iStart, pmField->iEnd);
+			pmField = pmField->pmNext;
+		}
+	}
 
 	HeapDestroy(hHeap);
 }
