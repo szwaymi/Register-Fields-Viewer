@@ -3,14 +3,39 @@
 #include <conio.h>
 #include <stdio.h>
 
+struct sField
+{
+	unsigned char iStart;
+	unsigned char iEnd;
+	struct sField* pmNext;
+};
+
+void showFields(struct sField *pmFields,unsigned long iValue)
+{
+	struct sField* pmField;
+	pmField = pmFields;
+	while (pmField)
+	{
+		unsigned char iDistance;
+		iDistance = pmField->iStart - pmField->iEnd;
+		printf("%2d ", pmField->iStart);
+		if (iDistance)
+		{
+			unsigned char iCon;
+			for (iCon = 0; iCon < iDistance; iCon++)
+			{
+				if (iCon == iDistance - 1) { printf("%2d ", pmField->iEnd); }
+				else printf("   ");
+			}
+		}
+		pmField = pmField->pmNext;
+	}
+	return;
+}
+
 int main(void)
 {
-	struct sField
-	{
-		unsigned char iStart;
-		unsigned char iEnd;
-		struct sField *pmNext;
-	};
+	
 
 	HANDLE hHeap;
 	char cValue[32];
@@ -135,7 +160,9 @@ PRO_NOW:
 			pmField = pmField->pmNext;
 		}
 	}
+	
 	printf("\n>>>>\n");
+	showFields(pmFields, iValue);
 	{//Seperate
 		unsigned char iStart=18;
 		unsigned char iEnd;
@@ -160,15 +187,7 @@ PRO_NOW:
 		}
 	}
 	printf("========\n");
-	{//Showing
-		struct sField* pmField;
-		pmField = pmFields;
-		while (pmField)
-		{
-			printf("[%d %d] ", pmField->iStart, pmField->iEnd);
-			pmField = pmField->pmNext;
-		}
-	}
+	showFields(pmFields, iValue);
 
 	HeapDestroy(hHeap);
 }
