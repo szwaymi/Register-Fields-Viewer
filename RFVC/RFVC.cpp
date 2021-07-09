@@ -30,6 +30,50 @@ void showFields(struct sField *pmFields,unsigned long iValue)
 		}
 		pmField = pmField->pmNext;
 	}
+	printf("\n");
+	pmField = pmFields;
+	while (pmField)
+	{
+		unsigned char iDistance;
+		unsigned char iMask;
+		iDistance = pmField->iStart - pmField->iEnd;
+		iMask = (1 << (iDistance+1)) - 1;
+		printf("%2X ", (iValue >> pmField->iStart)&iMask);
+		unsigned char iCon;
+		for (iCon = 0; iCon < iDistance; iCon++)
+		{
+			printf("   ");
+		}
+		pmField = pmField->pmNext;
+	}
+	printf("\n");
+
+	unsigned char iConSep=0;
+	pmField = pmFields;
+	while (pmField)
+	{
+		unsigned char iDistance;
+		unsigned char iMask;
+		iDistance = pmField->iStart - pmField->iEnd;
+		if (iDistance)
+		{
+			unsigned char iCon;
+			printf("|__");
+			for (iCon = 0; iCon < iDistance-1; iCon++)
+			{
+				printf("___");
+			}
+			printf("__|");
+		}
+		else
+		{
+			printf("--");
+			if (iConSep % 4 == 3) { printf("|"); }
+			else printf("-");
+		}
+		iConSep += (iDistance + 1);
+		pmField = pmField->pmNext;
+	}
 	return;
 }
 
@@ -93,6 +137,7 @@ PRO_NOW:
 	hHeap = HeapCreate(0, 0, 0);
 	if (hHeap == INVALID_HANDLE_VALUE || hHeap == 0) { return -1; }
 	
+	printf("%08X\n", iValue);
 	{
 		unsigned char iCon;
 		struct sField *pmField;
@@ -117,6 +162,7 @@ PRO_NOW:
 			printf("[%d %d] ", pmField->iStart, pmField->iEnd);
 			pmField = pmField->pmNext;
 		}
+		printf("\n\n");
 	}
 	{//Merging
 		unsigned char iStart;
@@ -149,7 +195,6 @@ PRO_NOW:
 			HeapFree(hHeap, 0, pmRemove);
 		} 
 		HeapFree(hHeap, 0, pmTemp);
-		printf("========\n");
 	}
 	{//Showing
 		struct sField* pmField;
@@ -160,9 +205,9 @@ PRO_NOW:
 			pmField = pmField->pmNext;
 		}
 	}
-	
-	printf("\n>>>>\n");
+	printf("\n\n");
 	showFields(pmFields, iValue);
+	printf("\n\n");
 	{//Seperate
 		unsigned char iStart=18;
 		unsigned char iEnd;
@@ -186,8 +231,7 @@ PRO_NOW:
 			pmField->pmNext = pmNew;
 		}
 	}
-	printf("========\n");
 	showFields(pmFields, iValue);
-
+	printf("\n\n");
 	HeapDestroy(hHeap);
 }
