@@ -34,13 +34,18 @@ void showFields(struct sField *pmFields,unsigned long iValue)
 	pmField = pmFields;
 	while (pmField)
 	{
+		unsigned char iCon;
 		unsigned char iDistance;
 		unsigned char iMask;
 		iDistance = pmField->iStart - pmField->iEnd;
+		for (iCon = 0; iCon < iDistance / 2; iCon++)
+		{
+			printf("   ");
+		}
 		iMask = (1 << (iDistance+1)) - 1;
 		printf("%2X ", (iValue >> pmField->iStart)&iMask);
-		unsigned char iCon;
-		for (iCon = 0; iCon < iDistance; iCon++)
+		
+		for (iCon = 0; iCon < iDistance-(iDistance/2); iCon++)
 		{
 			printf("   ");
 		}
